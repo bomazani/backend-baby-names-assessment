@@ -45,22 +45,26 @@ def extract_names(filename):
     followed by the name-rank strings in alphabetical order.
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
-    # +++your code here+++
+
+    results = []
+    with open(filename, 'r') as f:
+        print('filename is open')
+
     return
-
-
-def main():
-    # This command-line parsing code is provided.
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--summaryfile', help='creates a summary file', action='store_true')
+def create_parser():
+    parser = argparse.ArguentParser()
+    parser.add_argument('--summaryfile', help='creates a summary file', action = 'sotre_true')
     # The nargs option instructs the parser to expect 1 or more filenames.
     # It will also expand wildcards just like the shell, e.g. 'baby*.html' will work.
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
+
+def main():
     args = parser.parse_args()
 
     if not args:
+        #could be parser.print_help()
         parser.print_usage()
+        #could be exit(1) then sys would not need to be imported above.
         sys.exit(1)
 
     file_list = args.files
@@ -68,9 +72,19 @@ def main():
     # option flag
     create_summary = args.summaryfile
 
-    # +++your code here+++
+    for filename in file_list:
+        names = extract_names(filename)
+
+# test = '/n'.join(names)
+# if create_summary:
+#     with open(filename + '.summary', 'w') as f:
+#         f.write(text + '/n')
+# else:
+#     print(text)
+
     # For each filename, get the names, then either print the text output
     # or write it to a summary file
+
 
 
 if __name__ == '__main__':
