@@ -46,45 +46,75 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
     """
 
+    # open the file.
     results = []
     with open(filename, 'r') as f:
-        print('filename is open')
+        print('{} is open'.format(filename))
+        content = f.read()
 
-    return
+        # extract the year as an integer. use regex.
+        find_year = re.search(r'Popularity\sin\s(\d\d\d\d)', content)
+        if not find_year:
+            print('Year not found in text')
+            return None
+
+        year = find_year.group(1)
+        results.append(year)
+        # extract rank, boyname, girlname as tuples
+        rank_names_tuples = re.findall(
+            r'<td>(\d+)</td><td>(\w+)</td>\<td>(\w+)</td>', content)
+        # print(rank_boyname_girlname)
+        name_rank_dict = {}
+        for rank, boyname, girlname in rank_names_tuples:
+            if boyname not in name_rank_dict:
+                name_rank_dict[boyname] = rank
+            if girlname not in name_rank_dict:
+                name_rank_dict[girlname] = rank
+            print("rank:{rank} boy:{boyname} girl:{girlname}".format(
+                rank=rank, boyname=boyname, girlname=girlname))
+
+    sorted_names = sorted(name_rank_dict.keys())
+    print(sorted_names)
+    for n in sorted_names:
+        results.append(n + " " + name_rank_dict[n])
+    print(results)
+
+    return results
+
+
 def create_parser():
-    parser = argparse.ArguentParser()
-    parser.add_argument('--summaryfile', help='creates a summary file', action = 'sotre_true')
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--summaryfile', help='creates a summary file', action='store_true')
     # The nargs option instructs the parser to expect 1 or more filenames.
     # It will also expand wildcards just like the shell, e.g. 'baby*.html' will work.
     parser.add_argument('files', help='filename(s) to parse', nargs='+')
+    return parser
+
 
 def main():
+    parser = create_parser()
     args = parser.parse_args()
-
     if not args:
-        #could be parser.print_help()
         parser.print_usage()
-        #could be exit(1) then sys would not need to be imported above.
         sys.exit(1)
 
     file_list = args.files
-
-    # option flag
+    print(file_list)
+    # # option flag
     create_summary = args.summaryfile
 
     for filename in file_list:
         names = extract_names(filename)
 
-# test = '/n'.join(names)
-# if create_summary:
-#     with open(filename + '.summary', 'w') as f:
-#         f.write(text + '/n')
-# else:
-#     print(text)
-
     # For each filename, get the names, then either print the text output
     # or write it to a summary file
-
+        text = '/n'.join(names)
+        if create_summary:
+            with open(filename + '.summary', 'w') as f:
+                f.write(text + '/n')
+        else:
+            print(text)
 
 
 if __name__ == '__main__':
